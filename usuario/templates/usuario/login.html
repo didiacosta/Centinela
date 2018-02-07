@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>Centinela</title>
+    {% load staticfiles %}
+    <!-- Bootstrap -->
+    <link href="{% static 'bootstrap/css/bootstrap.min.css' %}" rel="stylesheet" media="screen">
+    <link href="{% static 'bootstrap/css/bootstrap-responsive.min.css' %}" rel="stylesheet" media="screen">
+    <link href="{% static 'assets/styles.css' %}" rel="stylesheet" media="screen">
+    <link href="{% static 'font-awesome-4.6.3/css/font-awesome.min.css' %}" rel="stylesheet" type="text/css" />
+     <!-- HTML5 shim, for IE6-8 support of HTML5 elements -->
+    <!--[if lt IE 9]>
+      <script src="http://html5shim.googlecode.com/svn/trunk/html5.js"></script>
+    <![endif]-->
+    <!-- <script src="js/vendor/modernizr-2.6.2-respond-1.1.0.min.js"></script> -->
+  </head>
+  <body id="login">
+    <div class="container">
+
+      <form class="form-signin" action="#" method="post">
+        {% csrf_token %}
+        <h2 class="form-signin-heading">Ingreso a Centinela</h2>
+            {% if mensaje %}
+                <div class="alert alert-danger">
+                    <i class="fa fa-warning"></i>
+                    {{ mensaje }}
+                </div>
+            {% endif %}
+        <input type="text" id="username" name="username" value="{{ username }}" class="input-block-level" placeholder="Nombre de usuario">
+        <input type="password" id="password" name="password" value="" class="input-block-level" placeholder="Clave">
+        <button class="btn btn-large btn-primary" type="submit">Ingresar</button>
+      </form>
+
+    </div> <!-- /container -->
+    <script src="{% static 'vendors/jquery-1.9.1.min.js' %}"></script>
+    <script src="{% static 'bootstrap/js/bootstrap.min.js' %}"></script>
+  </body>
+</html>
