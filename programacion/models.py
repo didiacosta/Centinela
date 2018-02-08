@@ -24,7 +24,7 @@ class Programacion(models.Model):
 	cerrada = models.BooleanField(default=False)
 
 	def __unicode__(self):
-		return self.inspector.username + ' - ' + self.fecha
+		return self.inspector.user.username + ' - ' + self.fecha.strftime('%Y-%m-%d %H:%M')
 	
 	class Meta:			
 		permissions = (

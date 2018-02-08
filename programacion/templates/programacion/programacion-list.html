@@ -1,0 +1,130 @@
+{% extends 'base.html' %}
+
+{% block titulo%}Agenda{% endblock titulo %}
+                            {% block opciones %}
+                            <li >
+                                <a href="{% url 'usuario.login' %}">Inicio</a>
+                            </li >
+                            <li class="active">
+                                <a href="{% url 'agenda.agenda-list' %}">Agenda</a>
+                            </li>
+                            <li>
+                                <a href="{% url 'usuario.login' %}">Inspecciones</a>
+                            </li>                                                     
+                            {% endblock opciones %}
+{% block navegacion %}
+<!-- 	<li>
+		<a href="#">Dashboard</a> <span class="divider">/</span>    
+	</li>
+    <li>
+    	<a href="#">Settings</a> <span class="divider">/</span> 
+    </li> -->
+    <li> <a href="{% url 'usuario.index' %}"><i class="fa fa-home"></i> Inicio <span class="divider">/</span></a></li>
+    <li class="active"> </i> Agenda </li>
+{% endblock navegacion %}
+
+{% block tituloContenido %}
+    Agenda de inspecciones
+
+{% endblock tituloContenido %}
+
+{% block contenido %}
+    {% if object_list %}
+        <div class="span12">
+            <div class="span12">
+                <div class="span1">
+                    <a href="{% url 'agenda.agendarInspeccion' %}"><i class="fa fa-plus-circle fa-2x"></i></a>
+                </div>
+                <div class="span5">
+                            <div class="control-group">
+                                <div class="controls">
+                                    <select class="span6 m-wrap" id="cmbInspecciones">
+                                        <option value="0">Mostrar Todas las inspecciones</option>
+                                        <option value="1">Mostrar Inpecciones por realizar</option>
+                                        <option value="2">Mostrar Inspecciones realizadas</option>
+                                    </select>
+                                </div>
+                            </div>                    
+                </div>
+                <div class="span6" style="text-align:right">
+                    <div class="control-group">
+                        <div class="controls">
+                            <input class="input-xlarge" id="txtBuscar" type="text" placeholder="Buscar por OS..">
+                            <button class="btn btn-info">Buscar</button>
+                    {% if user.usuario.coordinador %}
+                            
+                                
+                                    <select class="span6 m-wrap" id="cmbInspectores">
+                                        <option value="0">Todos los inspectores</option>
+
+                                    </select>
+                               
+                            
+                    {% endif %}
+                        </div>
+                    </div>
+
+                </div>
+            </div>
+            <table class="table table-hover">
+                <thead>
+                    <tr>
+                        <th>Inspector</th>
+                        <th>fecha</th>
+                        <th>Orden de servicio</th>
+                        <th>Ejecutada</th>
+                        <th>Opciones</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for inspeccion in object_list %}
+                        <tr>
+                            <td>{{ inspeccion.inspector.nombres }} {{ inspeccion.inspector.apellidos }}</td>
+                            <td>{{ inspeccion.fecha }}</td>
+                            <td>{{ inspeccion.ordenServicio }}</td>
+                            <td>
+                                {% if inspeccion.cerrada %}
+                                    <font color="green"><i class="fa fa-check-circle-o fa-2x"></i></font>
+                                {% else %}
+                                    <font color="red"><i class="fa fa-minus-circle fa-2x"></i></font>
+                                {% endif %}
+                            </td>
+                            <td>
+                                <a href="#" title="Iniciar Inspeccion">
+                                    <i class="fa fa-play-circle-o fa-2x"></i>
+                                </a>
+                                <a href="#" title="Cancelar">
+                                    <i class="fa fa-times fa-2x"></i>
+                                </a>
+                            </td>
+                        </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+            <!--Paginacion de los registros-->
+            {% if is_paginated %}
+            <ul class="pagination">
+
+                    {% if page_obj.has_previous %}
+                        <li><a href="?page={{ page_obj.previous_page_number }}">anterior</a></li>
+                    {% endif %}
+                    {% for num in page_obj.paginator.page_range %}
+                        {% ifequal num page_obj.number %}
+                            <li><a href="#" class="active">{{ num }}</a></li>
+                        {% else %}
+                            <li><a href="?page={{ num }}"> {{ num }}</a></li>
+                        {% endifequal %} 
+                    {% endfor %}
+                
+                    {% if page_obj.has_next %}
+                        <li><a href="?page={{ page_obj.next_page_number }}">siguiente</a></li>
+                    {% endif %}
+            </ul>
+            {% endif %}
+        </div>
+    {% else %}
+        <div class="span12 alert alert-warning">
+             <i class="fa fa-info-warning fa-2x"></i> No se encontraron registros en su agenda    
+        </div>
+    {% endif %}
+{% endblock contenido %}
