@@ -27,48 +27,86 @@
 {% endblock tituloContenido %}
 
 {% block contenido %}
-    {% if object_list %}
+    
         <div class="span12">
             <div class="span12">
                 <div class="span1">
                     <a href="{% url 'agenda.agendarInspeccion' %}"><i class="fa fa-plus-circle fa-2x"></i></a>
                 </div>
-                <div class="span5">
-                            <div class="control-group">
-                                <div class="controls">
-                                    <select class="span6 m-wrap" id="cmbInspecciones">
-                                        <option value="0">Mostrar Todas las inspecciones</option>
-                                        <option value="1">Mostrar Inpecciones por realizar</option>
-                                        <option value="2">Mostrar Inspecciones realizadas</option>
-                                    </select>
-                                </div>
-                            </div>                    
-                </div>
-                <div class="span6" style="text-align:right">
+                
+                <div class="span11" style="text-align:right">
                     <form action="." method="GET" >
                         <div class="control-group">
                             <div class="controls">
-                                <input class="input-xlarge" id="q" name="q" value="{{ query|escape }}" type="text" placeholder="Buscar por OS..">
-                                <button class="btn btn-info" type="submit">Buscar</button>
+                                <input class="input-xlarge" id="q" name="q" value="{{ query|escape }}" type="text" placeholder="Buscar por OS o nombre de proyecto..">
+                               
                                         {% if user.usuario.coordinador %}
-                                            <select class="span6 m-wrap" id="cmbInspectores">
-                                                <option value="0">Todos los inspectores</option>
-
-                                            </select>
+                                
+                                    
+                                        <select class="span6 m-wrap" id="cmbInspectores" name="cmbInspectores">
+                                            {% if inspectorSeleccionado %}
+                                                <option value={{inspectorSeleccionado.id}}>
+                                                    {{inspectorSeleccionado.nombres}} {{inspectorSeleccionado.apellidos}}
+                                                </option>                                               
+                                            {% endif %}
+                                            <option value=0>[Todos los inspectores...]</option>
+                                            
+                                            
+                                            {% for inspector in inspectores %}
+                                                {% if inspector != inspectorSeleccionado %}
+                                                <option value={{inspector.id}}>
+                                                    {{inspector.nombres}} {{inspector.apellidos}}
+                                                </option>
+                                                {% endif %}
+                                            {% endfor %}    
+                                        </select>
+                                   
+                                
                                         {% endif %}
+                                
+                                <div class="controls">
+                                    <select class="span6 m-wrap" id="cmbEjecutada" name="cmbEjecutada">
+                                        {% if ejecutada %}
+                                            {% if ejecutada == '0' %}
+                                                <option value="0">[Mostrar Todas las inspecciones...]</option>
+                                                <option value="1">Mostrar Inpecciones por realizar</option>
+                                                <option value="2">Mostrar Inspecciones realizadas</option>
+                                            {% endif %}
+                                            {% if ejecutada == '1' %}
+                                                <option value="1">Mostrar Inpecciones por realizar</option>
+                                                <option value="0">[Mostrar Todas las inspecciones...]</option>
+                                                <option value="2">Mostrar Inspecciones realizadas</option>
+                                            {% endif %}
+                                            {% if ejecutada == '2' %}
+                                                <option value="2">Mostrar Inspecciones realizadas</option>
+                                                <option value="0">[Mostrar Todas las inspecciones...]</option>
+                                                <option value="1">Mostrar Inpecciones por realizar</option>
+                                                
+                                            {% endif %}
+                                        {% else %}
+                                            <option value="0">[Mostrar Todas las inspecciones...]</option>
+                                            <option value="1">Mostrar Inpecciones por realizar</option>
+                                            <option value="2">Mostrar Inspecciones realizadas</option>
+                                        {% endif %}
+                                    </select>
+                                </div>
+                                  
+                                <button class="btn btn-info" type="submit">Buscar</button>        
                             </div>
                         </div>
-                     </form>
+                    </form>
                 </div>
             </div>
+            {% if object_list %}
             <table class="table table-hover">
                 <thead>
                     <tr>
                         <th width="10%">Opciones</th>
                         <th width="10%">Ejecutada</th>
                         <th width="10%">Orden de servicio</th>
-                        <th width="35%">fecha Programada</th>
-                        <th width="35%">Inspector</th>                        
+                        <th width="20%">Nombre del proyecto</th>
+                        <th width="25%">fecha Programada</th>
+                        <th width="15%">Inspector</th>                        
                         
                         
                     </tr>
@@ -95,6 +133,7 @@
                                 {% endif %}
                             </td>
                             <td>{{ inspeccion.ordenServicio }}</td>
+                            <td>{{ inspeccion.nombreProyecto }}</td>
                             <td>{{ inspeccion.fecha }}</td>
                             <td>{{ inspeccion.inspector.nombres }} {{ inspeccion.inspector.apellidos }}</td>
                             
@@ -125,10 +164,11 @@
                     {% endif %}
             </ul>
             {% endif %}
+        
+        {% else %}
+            <div class="span12 alert alert-warning">
+                 <i class="fa fa-warning fa-2x"></i> No se encontraron registros en su agenda    
+            </div>
+        {% endif %}
         </div>
-    {% else %}
-        <div class="span12 alert alert-warning">
-             <i class="fa fa-info-warning fa-2x"></i> No se encontraron registros en su agenda    
-        </div>
-    {% endif %}
 {% endblock contenido %}

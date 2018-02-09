@@ -10,6 +10,8 @@ from django.conf import settings
 
 from .forms import InspeccionForm
 
+from django.db.models import Q
+
 class InspeccionCreateView(CreateView):
 	model = Inspeccion
 	template_name='inspeccion/inspeccion-form.html'
@@ -54,17 +56,76 @@ class InspeccionListView(ListView):
 	def get_queryset(self):
 		usuario= Usuario.objects.get(user=self.request.user)
 		query = self.request.GET.get('q', '')
+		inspector = self.request.GET.get('cmbInspectores', '')
+
+		qset=(~Q(id=0))
+
 		if query:
-			if usuario.coordinador:
-				queryset = self.model.objects.filter(programacion__ordenServicio__icontains=query)
-			else:
-				queryset= self.model.objects.filter(programacion__inspector=usuario,
-					programacion__ordenServicio__icontains=query)
+			qset=qset & (Q(programacion__ordenServicio__icontains=query) | Q(programacion__nombreProyecto__icontains=query))
+		if usuario.coordinador==False:
+			qset=qset & (Q(programacion__inspector=usuario))
 		else:
-			if usuario.coordinador:
-				queryset = self.model.objects.all()
-			else:
-				queryset= self.model.objects.filter(programacion__inspector=usuario)
+			if inspector and inspector !='0':
+				objInspector = Usuario.objects.get(pk=inspector)
+				if objInspector:
+					qset=qset & (Q(programacion__inspector=objInspector))
+
+		queryset = self.model.objects.filter(qset)
+
 
 		return queryset
+
+	def get_context_data(self, **kwargs):
+		ctx = super(InspeccionListView, self).get_context_data(**kwargs)
+		ctx['inspectores'] = Usuario.objects.filter(inspector=True)
+
+		inspector = self.request.GET.get('cmbInspectores', '')
+		if inspector and inspector !='0':
+			ctx['inspectorSeleccionado'] = Usuario.objects.get(pk=inspector)
+		else:
+			ctx['inspectorSeleccionado'] = None
+
+		ctx['query']= self.request.GET.get('q', '')		
+		return ctx
+
+class InspeccionTabularListView(ListView):
+	model=Inspeccion
+	template_name = 'inspeccion/inspeccion-listTable.html'
+	paginate_by = 10
+
+
+	def get_queryset(self):
+		usuario= Usuario.objects.get(user=self.request.user)
+		query = self.request.GET.get('q', '')
+		inspector = self.request.GET.get('cmbInspectores', '')
+
+		qset=(~Q(id=0))
+
+		if query:
+			qset=qset & (Q(programacion__ordenServicio__icontains=query) | Q(programacion__nombreProyecto__icontains=query))
+		if usuario.coordinador==False:
+			qset=qset & (Q(programacion__inspector=usuario))
+		else:
+			if inspector and inspector !='0':
+				objInspector = Usuario.objects.get(pk=inspector)
+				if objInspector:
+					qset=qset & (Q(programacion__inspector=objInspector))
+
+		queryset = self.model.objects.filter(qset)
+
+
+		return queryset
+
+	def get_context_data(self, **kwargs):
+		ctx = super(InspeccionTabularListView, self).get_context_data(**kwargs)
+		ctx['inspectores'] = Usuario.objects.filter(inspector=True)
+
+		inspector = self.request.GET.get('cmbInspectores', '')
+		if inspector and inspector !='0':
+			ctx['inspectorSeleccionado'] = Usuario.objects.get(pk=inspector)
+		else:
+			ctx['inspectorSeleccionado'] = None
+
+		ctx['query']= self.request.GET.get('q', '')		
+		return ctx
 

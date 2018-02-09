@@ -42,11 +42,11 @@
 {% endblock tituloContenido %}
 
 {% block contenido %}
-    {% if object_list %}
+    
         <div class="span12">
             <div class="span12">
                 <div class="span6">
-                            <div class="control-group">
+                            <!-- <div class="control-group">
                                 <div class="controls">
                                     <select class="span6 m-wrap" id="cmbInspecciones">
                                         <option value="0">Mostrar Todas las inspecciones</option>
@@ -54,44 +54,55 @@
                                         <option value="2">Mostrar Inspecciones realizadas</option>
                                     </select>
                                 </div>
-                            </div>                    
+                            </div> -->
+                            <a href="{% url 'inspeccion.inspeccion-listTable' %}"><i class="fa fa-table fa-2x" aria-hidden="true"></i> Vista tabular</a>                    
                 </div>
                 <div class="span6" style="text-align:right">
                     <form action="." method="GET" >
                         <div class="control-group">
                             <div class="controls">
-                                <input class="input-xlarge" id="q" name="q" value="{{ query|escape }}" type="text" placeholder="Buscar por OS..">
-                                <button class="btn btn-info" type="submit">Buscar</button>
+                                <input class="input-xlarge" id="q" name="q" value="{{ query|escape }}" type="text" placeholder="Buscar por OS o nombre de proyecto..">
+                               
                                         {% if user.usuario.coordinador %}
                                 
                                     
-                                        <select class="span6 m-wrap" id="cmbInspectores">
-                                            <option value="0">Todos los inspectores</option>
-
+                                        <select class="span6 m-wrap" id="cmbInspectores" name="cmbInspectores">
+                                            {% if inspectorSeleccionado %}
+                                                <option value={{inspectorSeleccionado.id}}>
+                                                    {{inspectorSeleccionado.nombres}} {{inspectorSeleccionado.apellidos}}
+                                                </option>                                               
+                                            {% endif %}
+                                            <option value=0>[Todos los inspectores...]</option>
+                                            
+                                            
+                                            {% for inspector in inspectores %}
+                                                {% if inspector != inspectorSeleccionado %}
+                                                <option value={{inspector.id}}>
+                                                    {{inspector.nombres}} {{inspector.apellidos}}
+                                                </option>
+                                                {% endif %}
+                                            {% endfor %}    
                                         </select>
                                    
                                 
                                         {% endif %}
+                                <button class="btn btn-info" type="submit">Buscar</button>        
                             </div>
                         </div>
                     </form>
 
                 </div>
             </div>
-            <div class="span12">
-                {% if query %}
-                    <h2>Resultados encontrados para "{{ query|escape }}":</h2>
-                {% endif %}
-            </div>
+            {% if object_list %}
             <div class="span12" id="map">
             </div>
+            {% else %}
+                <div class="span12 alert alert-warning">
+                     <i class="fa fa-info-warning fa-2x"></i> No se encontraron datos   
+                </div>
+            {% endif %}
+        </div>
 
-        </div>
-    {% else %}
-        <div class="span12 alert alert-warning">
-             <i class="fa fa-info-warning fa-2x"></i> No se encontraron datos   
-        </div>
-    {% endif %}
 {% endblock contenido %}
 
 {% block imports %}
@@ -106,10 +117,13 @@
           center: myLatLng
         });
         {% for inspeccion in object_list %}
+            {% if inspeccion.latitud %}
+            {% if inspeccion.longitud %}
             var contentString = '<b>Orden de Servicio:</b> {{inspeccion.programacion.ordenServicio}}<br/>'+
             '<b>Inspector:</b> {{inspeccion.programacion.inspector.nombres}} '+
             '{{inspeccion.programacion.inspector.apellidos}}<br/><b>Proyecto: </b>'+ 
-            '{{inspeccion.programacion.nombreProyecto}}<br/><b>Fecha Inspección: </b>{{ inspeccion.fechaInicio }}';
+            '{{inspeccion.programacion.nombreProyecto}}<br/><b>Fecha Inspección: </b>{{ inspeccion.fechaInicio }}<br/>'+
+            '<b>Proyecto: </b> {{inspeccion.programacion.nombreProyecto}}';
             
 
             var infowindow = new google.maps.InfoWindow({
@@ -133,6 +147,8 @@
                                 info.open(map, this);
                              
                         });
+            {% endif %}
+            {% endif %}
         {% endfor %}
       }
     {% endif %}  

@@ -9,29 +9,55 @@ from django.core.urlresolvers import reverse, reverse_lazy
 from django.conf import settings
 
 from .forms import ProgramacionForm
+from django.db.models import Q
 # Create your views here.
 
 class ProgramacionListView(ListView):
 	model=Programacion
 	template_name = 'programacion/programacion-list.html'
-	paginate_by = 20
+	paginate_by = 10
 
 
 	def get_queryset(self):
 		usuario= Usuario.objects.get(user=self.request.user)
 		query = self.request.GET.get('q', '')
+		inspector = self.request.GET.get('cmbInspectores', '')
+		ejecutada = self.request.GET.get('cmbEjecutada', '')
+
+		qset=(~Q(id=0))
+
 		if query:
-			if usuario.coordinador:
-				queryset = self.model.objects.filter(ordenServicio__icontains=query).order_by('-fecha')
-			else:
-				queryset= self.model.objects.filter(inspector=usuario,ordenServicio__icontains=query).order_by('-fecha')			
+			qset=qset & (Q(ordenServicio__icontains=query) | Q(nombreProyecto__icontains=query))
+		if usuario.coordinador==False:
+			qset = qset & (Q(inspector=usuario))
 		else:
-			if usuario.coordinador:
-				queryset = self.model.objects.all().order_by('-fecha')
-			else:
-				queryset= self.model.objects.filter(inspector=usuario).order_by('-fecha')
+			if inspector and inspector !='0':
+				objInspector = Usuario.objects.get(pk=inspector)
+				if objInspector:
+					qset=qset & (Q(inspector=objInspector))
+		if ejecutada:
+			if ejecutada=='1':
+				qset=qset & Q(cerrada=False)
+			elif ejecutada=='2':
+				qset=qset & Q(cerrada=True)
+		
+		queryset= self.model.objects.filter(qset).order_by('-fecha')
 
 		return queryset
+
+	def get_context_data(self, **kwargs):
+		ctx = super(ProgramacionListView, self).get_context_data(**kwargs)
+		ctx['inspectores'] = Usuario.objects.filter(inspector=True)
+
+		inspector = self.request.GET.get('cmbInspectores', '')
+		ctx['ejecutada']= self.request.GET.get('cmbEjecutada', '')
+		if inspector and inspector !='0':
+			ctx['inspectorSeleccionado'] = Usuario.objects.get(pk=inspector)
+		else:
+			ctx['inspectorSeleccionado'] = None
+
+		ctx['query']= self.request.GET.get('q', '')		
+		return ctx
 
 class ProgramacionCreateView(CreateView):
 	model = Programacion

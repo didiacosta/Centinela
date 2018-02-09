@@ -1,0 +1,162 @@
+{% extends 'base.html' %}
+
+{% block titulo%}Seguimiento{% endblock titulo %}
+{% block estilos %}
+    <style>
+      /* Always set the map height explicitly to define the size of the div
+       * element that contains the map. */
+      #map {
+        height: 800px;
+      }
+      /* Optional: Makes the sample page fill the window. */
+/*      html, body {
+        height: 100%;
+        margin: 0;
+        padding: 0;
+      }*/
+    </style>
+{% endblock estilos%}
+                            {% block opciones %}
+                            <li >
+                                <a href="{% url 'usuario.login' %}">Inicio</a>
+                            </li >
+                            <li >
+                                <a href="{% url 'agenda.agenda-list' %}">Agenda</a>
+                            </li>
+                                                    
+                            {% endblock opciones %}
+{% block navegacion %}
+<!--    <li>
+        <a href="#">Dashboard</a> <span class="divider">/</span>    
+    </li>
+    <li>
+        <a href="#">Settings</a> <span class="divider">/</span> 
+    </li> -->
+    <li> <a href="{% url 'usuario.index' %}"><i class="fa fa-home"></i> Inicio <span class="divider">/</span></a></li>
+    <li class="active"><a href="{% url 'inspeccion.inspeccion-list' %}"> Seguimiento <span class="divider">/</span></a></li>
+    <li class="active"> Seguimiento Tabular </li>
+{% endblock navegacion %}
+
+{% block tituloContenido %}
+    Seguimiento de inspecciones - Vista Tabular
+
+{% endblock tituloContenido %}
+
+{% block contenido %}
+    
+        <div class="span12">
+            <div class="span12">
+                <div class="span6">
+                            <!-- <div class="control-group">
+                                <div class="controls">
+                                    <select class="span6 m-wrap" id="cmbInspecciones">
+                                        <option value="0">Mostrar Todas las inspecciones</option>
+                                        <option value="1">Mostrar Inpecciones por realizar</option>
+                                        <option value="2">Mostrar Inspecciones realizadas</option>
+                                    </select>
+                                </div>
+                            </div> -->
+                            <a href="{% url 'inspeccion.inspeccion-list' %}"><i class="fa fa-map fa-2x" aria-hidden="true"></i></i> Vista Mapa</a>                    
+                </div>
+                <div class="span6" style="text-align:right">
+                    <form action="." method="GET" >
+                        <div class="control-group">
+                            <div class="controls">
+                                <input class="input-xlarge" id="q" name="q" value="{{ query|escape }}" type="text" placeholder="Buscar por OS o nombre de proyecto..">
+                               
+                                        {% if user.usuario.coordinador %}
+                                
+                                    
+                                        <select class="span6 m-wrap" id="cmbInspectores" name="cmbInspectores">
+                                        	{% if inspectorSeleccionado %}
+                                           		<option value={{inspectorSeleccionado.id}}>
+                                            		{{inspectorSeleccionado.nombres}} {{inspectorSeleccionado.apellidos}}
+                                            	</option>                                        		
+                                        	{% endif %}
+                                        	<option value=0>[Todos los inspectores...]</option>
+                                        	
+                                            
+                                            {% for inspector in inspectores %}
+                                            	{% if inspector != inspectorSeleccionado %}
+                                            	<option value={{inspector.id}}>
+                                            		{{inspector.nombres}} {{inspector.apellidos}}
+                                            	</option>
+                                            	{% endif %}
+                                            {% endfor %}	
+                                        </select>
+                                   
+                                
+                                        {% endif %}
+                                <button class="btn btn-info" type="submit">Buscar</button>        
+                            </div>
+                        </div>
+                    </form>
+
+                </div>
+            </div>
+            {% if object_list %}
+ 			<table class="table table-hover">
+                <thead>
+                    <tr>
+                    	<th width="10%">GPS disponible</th>
+                    	<th width="10%">Orden de servicio</th>
+                    	<th width="25%">Proyecto</th>
+                    	<th width="10%">Inspector</th>
+                        <th width="15%">Fecha programada</th>
+                        <th width="15%">Fecha ejecucion</th>
+                        <th width="20%">observaciones</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for inspeccion in object_list %}
+                        <tr>
+                        	<td>
+                        		{% if inspeccion.latitud %}
+	                        		{% if inspeccion.longitud %}
+	                        			<font color="green"><b>Si</b></font>
+	                        		{% else %}
+	                        			<font color="red"><b>No</b></font>
+	                        		{% endif %}
+	                        	{% else %}
+	                        		<font color="red"><b>No</b></font>
+                        		{% endif %}
+                        	</td>
+                            <td>{{ inspeccion.programacion.ordenServicio }}</td>
+                            <td>{{ inspeccion.programacion.nombreProyecto }}</td>
+                            <td>{{ inspeccion.programacion.inspector.nombres }} {{ inspeccion.programacion.inspector.apellidos }}</td>
+                            <td>{{ inspeccion.fechaInicio }}</td>
+                            <td>{{ inspeccion.programacion.fecha }}</td>
+                            <td>{{ inspeccion.observacion }}</td>
+                        </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+            <!--Paginacion de los registros-->
+            {% if is_paginated %}
+            <ul class="pagination">
+
+                    {% if page_obj.has_previous %}
+                        <li><a href="?page={{ page_obj.previous_page_number }}">anterior</a></li>
+                    {% endif %}
+                    {% for num in page_obj.paginator.page_range %}
+                        {% ifequal num page_obj.number %}
+                            <li><a href="#" class="active">{{ num }}</a></li>
+                        {% else %}
+                            <li><a href="?page={{ num }}"> {{ num }}</a></li>
+                        {% endifequal %} 
+                    {% endfor %}
+                
+                    {% if page_obj.has_next %}
+                        <li><a href="?page={{ page_obj.next_page_number }}">siguiente</a></li>
+                    {% endif %}
+            </ul>
+            {% endif %}
+    {% else %}
+        <div class="span12 alert alert-warning">
+             <i class="fa fa-warning fa-2x"></i> No se encontraron datos   
+        </div>
+    {% endif %}
+        </div>
+
+{% endblock contenido %}
+

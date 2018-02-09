@@ -16,10 +16,15 @@
   </head>
   <body id="login">
     <div class="container">
-
+        <div class="row">
+          <div class="span4">
+            {% include '_messages.html' %}
+          </div>
+        </div>
       <form class="form-signin" action="#" method="post">
         {% csrf_token %}
         <h2 class="form-signin-heading">Ingreso a Centinela</h2>
+
             {% if mensaje %}
                 <div class="alert alert-danger">
                     <i class="fa fa-warning"></i>

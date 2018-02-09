@@ -1,0 +1,27 @@
+{% extends 'base.html' %}
+
+{% block titulo%}Cambio de clave{% endblock titulo %}
+
+{% block navegacion %}
+<!-- 	<li>
+		<a href="#">Dashboard</a> <span class="divider">/</span>    
+	</li>-->
+    <li>
+    	<a href="{% url 'usuario.index' %}"><i class="fa fa-home"></i>Inicio</a> <span class="divider">/</span> 
+    </li> 
+    <li class="active"> Cambio de clave</li>
+{% endblock navegacion %}
+
+{% block tituloContenido %}
+	Cambio de clave
+{% endblock tituloContenido %}
+
+{% block contenido %}
+
+    <form method="post" action="">
+        {% csrf_token %}
+        {{ form.as_p }}
+        <button class="btn btn-primary" type="submit">Actualizar Contraseña</button>
+        <a href="{% url 'usuario.index' %}" class="btn btn-warning" type="submit">Cancelar</a>
+    </form>
+{% endblock contenido %}

@@ -66,9 +66,9 @@
 
                                 </a>
                                 <ul class="dropdown-menu">
-                                    <li>
-                                        <a tabindex="-1" href="#">Mi perfil</a>
-                                    </li>
+<!--                                     <li>
+                                        <a tabindex="-1" href="{% url 'usuario.editar_clave' %}">Cambiar clave</a>
+                                    </li> -->
                                     <li class="divider"></li>
                                     <li>
                                         <a tabindex="-1" href="{% url 'usuario.logout' %}">Salir</a>
@@ -87,7 +87,7 @@
                                                      
                             {% endblock opciones %}
                             {% if user.usuario.coordinador%}   
-                              {% if '/seguimiento/' in request.path %}
+                              {% if 'seguimiento' in request.path %}
                                 <li class="active">
                               {% else %}
                                 <li>  

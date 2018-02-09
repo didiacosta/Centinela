@@ -1,10 +1,11 @@
 from django.conf.urls import patterns,url
 
-from .views import InspeccionCreateView, InspeccionListView
+from .views import InspeccionCreateView, InspeccionListView, InspeccionTabularListView
 
 urlpatterns = [
 
     url(r'^seguimiento/$', InspeccionListView.as_view(), name='inspeccion.inspeccion-list'),
+    url(r'^seguimientotabular/$', InspeccionTabularListView.as_view(), name='inspeccion.inspeccion-listTable'),
     url(r'^registrarInspeccion/(?P<id>[0-9]+)/$', InspeccionCreateView.as_view(), name='inspeccion.registrarInspeccion'),
     # url(r'^editarDictamen/(?P<pk>[\w\-]+)/$', DictamenUpdateView.as_view(), name='dictamen.editarDictamen'),
     # url(r'^crearDictamen/$', DictamenCreateView.as_view(), name='dictamen.crearDictamen'),
