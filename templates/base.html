@@ -16,8 +16,6 @@
             <script src="http://html5shim.googlecode.com/svn/trunk/html5.js"></script>
         <![endif]-->
         <script src="{% static 'vendors/modernizr-2.6.2-respond-1.1.0.min.js' %}"></script>
-        <link href="{% static 'vendors/datepicker.css' %}" rel="stylesheet" media="screen">
-        <script src="{% static 'vendors/bootstrap-datepicker.js' %}"></script>
 
 
         <style>
@@ -48,6 +46,8 @@
 
 
         </style>
+        {% block estilos %}
+        {% endblock estilos %}
     </head>
     
     <body>
@@ -84,13 +84,15 @@
                             <li>
                                 <a href="{% url 'agenda.agenda-list' %}">Agenda</a>
                             </li>
-                            <li>
-                                <a href="{% url 'usuario.login' %}">Inspecciones</a>
-                            </li>                                                     
+                                                     
                             {% endblock opciones %}
                             {% if user.usuario.coordinador%}   
-                                <li>
-                                    <a href="{% url 'usuario.login' %}">Seguimiento</a>
+                              {% if '/seguimiento/' in request.path %}
+                                <li class="active">
+                              {% else %}
+                                <li>  
+                              {% endif%}
+                                    <a href="{% url 'inspeccion.inspeccion-list' %}">Seguimiento</a>
                                 </li>
                             {% endif %}
 

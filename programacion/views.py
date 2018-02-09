@@ -19,10 +19,17 @@ class ProgramacionListView(ListView):
 
 	def get_queryset(self):
 		usuario= Usuario.objects.get(user=self.request.user)
-		if usuario.coordinador:
-			queryset = self.model.objects.all().order_by('-fecha')
+		query = self.request.GET.get('q', '')
+		if query:
+			if usuario.coordinador:
+				queryset = self.model.objects.filter(ordenServicio__icontains=query).order_by('-fecha')
+			else:
+				queryset= self.model.objects.filter(inspector=usuario,ordenServicio__icontains=query).order_by('-fecha')			
 		else:
-			queryset= self.model.objects.filter(inspector=usuario).order_by('-fecha')
+			if usuario.coordinador:
+				queryset = self.model.objects.all().order_by('-fecha')
+			else:
+				queryset= self.model.objects.filter(inspector=usuario).order_by('-fecha')
 
 		return queryset
 

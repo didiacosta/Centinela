@@ -8,9 +8,7 @@
                             <li class="active">
                                 <a href="{% url 'agenda.agenda-list' %}">Agenda</a>
                             </li>
-                            <li>
-                                <a href="{% url 'usuario.login' %}">Inspecciones</a>
-                            </li>                                                     
+                                                     
                             {% endblock opciones %}
 {% block navegacion %}
     <li> <a href="{% url 'usuario.index' %}"><i class="fa fa-home"></i> Inicio <span class="divider">/</span></a></li>
@@ -37,17 +35,7 @@
 		<a href="{% url 'agenda.agenda-list' %}"><i class="fa fa-arrow-circle-left fa-2x"></i> Volver al listado de la agenda</a>
 	</div>
 	<!-- {{ user.usuario.id_empresa.nombre}} -->
-                                          <div class="controls">
-                                            <input type="text" class="input-xlarge datepicker" id="date01" value="02/16/12">
-                                            <p class="help-block">In addition to freeform text, any HTML5 text-based input appears like so.</p>
-                                          </div>
-{% endblock contenido %}
-{% block imports %}
-	<script type="text/javascript">
-		jQuery(document).ready(function(){
-			$(".datepicker").datepicker();
-		});
 
-	</script>
-{% endblock imports %}
+{% endblock contenido %}
+
 

@@ -1,0 +1,145 @@
+{% extends 'base.html' %}
+
+{% block titulo%}Seguimiento{% endblock titulo %}
+{% block estilos %}
+    <style>
+      /* Always set the map height explicitly to define the size of the div
+       * element that contains the map. */
+      #map {
+        height: 800px;
+      }
+      /* Optional: Makes the sample page fill the window. */
+/*      html, body {
+        height: 100%;
+        margin: 0;
+        padding: 0;
+      }*/
+    </style>
+{% endblock estilos%}
+                            {% block opciones %}
+                            <li >
+                                <a href="{% url 'usuario.login' %}">Inicio</a>
+                            </li >
+                            <li >
+                                <a href="{% url 'agenda.agenda-list' %}">Agenda</a>
+                            </li>
+                                                    
+                            {% endblock opciones %}
+{% block navegacion %}
+<!--    <li>
+        <a href="#">Dashboard</a> <span class="divider">/</span>    
+    </li>
+    <li>
+        <a href="#">Settings</a> <span class="divider">/</span> 
+    </li> -->
+    <li> <a href="{% url 'usuario.index' %}"><i class="fa fa-home"></i> Inicio <span class="divider">/</span></a></li>
+    <li class="active"> </i> Seguimiento </li>
+{% endblock navegacion %}
+
+{% block tituloContenido %}
+    Seguimiento de inspecciones
+
+{% endblock tituloContenido %}
+
+{% block contenido %}
+    {% if object_list %}
+        <div class="span12">
+            <div class="span12">
+                <div class="span6">
+                            <div class="control-group">
+                                <div class="controls">
+                                    <select class="span6 m-wrap" id="cmbInspecciones">
+                                        <option value="0">Mostrar Todas las inspecciones</option>
+                                        <option value="1">Mostrar Inpecciones por realizar</option>
+                                        <option value="2">Mostrar Inspecciones realizadas</option>
+                                    </select>
+                                </div>
+                            </div>                    
+                </div>
+                <div class="span6" style="text-align:right">
+                    <form action="." method="GET" >
+                        <div class="control-group">
+                            <div class="controls">
+                                <input class="input-xlarge" id="q" name="q" value="{{ query|escape }}" type="text" placeholder="Buscar por OS..">
+                                <button class="btn btn-info" type="submit">Buscar</button>
+                                        {% if user.usuario.coordinador %}
+                                
+                                    
+                                        <select class="span6 m-wrap" id="cmbInspectores">
+                                            <option value="0">Todos los inspectores</option>
+
+                                        </select>
+                                   
+                                
+                                        {% endif %}
+                            </div>
+                        </div>
+                    </form>
+
+                </div>
+            </div>
+            <div class="span12">
+                {% if query %}
+                    <h2>Resultados encontrados para "{{ query|escape }}":</h2>
+                {% endif %}
+            </div>
+            <div class="span12" id="map">
+            </div>
+
+        </div>
+    {% else %}
+        <div class="span12 alert alert-warning">
+             <i class="fa fa-info-warning fa-2x"></i> No se encontraron datos   
+        </div>
+    {% endif %}
+{% endblock contenido %}
+
+{% block imports %}
+<script>
+    {% if object_list %}
+      function initMap() {
+        markers=Array();
+        var myLatLng = {lat: 6.477684, lng: -73.966209};
+
+        var map = new google.maps.Map(document.getElementById('map'), {
+          zoom: 6,
+          center: myLatLng
+        });
+        {% for inspeccion in object_list %}
+            var contentString = '<b>Orden de Servicio:</b> {{inspeccion.programacion.ordenServicio}}<br/>'+
+            '<b>Inspector:</b> {{inspeccion.programacion.inspector.nombres}} '+
+            '{{inspeccion.programacion.inspector.apellidos}}<br/><b>Proyecto: </b>'+ 
+            '{{inspeccion.programacion.nombreProyecto}}<br/><b>Fecha Inspección: </b>{{ inspeccion.fechaInicio }}';
+            
+
+            var infowindow = new google.maps.InfoWindow({
+              content: contentString,
+              maxWidth: 300
+            });
+            markers.push(new google.maps.Marker({
+              position:{lat: {{inspeccion.latitud}}, lng: {{inspeccion.longitud}}},
+              map: map,
+              title: String({{inspeccion.programacion.ordenServicio}})
+            }));
+            //markers.push(marker);
+            markers[markers.length-1].infowindow = new google.maps.InfoWindow({
+                content: contentString
+            });
+            //  markers[markers.length-1].addListener('click', function() {
+            //   infowindow.open(map, markers[markers.length-1]);
+            // });
+                        google.maps.event.addListener(markers[markers.length-1], 'click', function() {
+                                var info=this.infowindow;
+                                info.open(map, this);
+                             
+                        });
+        {% endfor %}
+      }
+    {% endif %}  
+</script>
+    <script type="text/javascript"
+        src="https://maps.googleapis.com/maps/api/js?key=AIzaSyCu6DgqZcE2iYR0MacArGFz2Mx8lSrVo5E&callback=initMap">
+    </script>
+
+
+{% endblock imports %}

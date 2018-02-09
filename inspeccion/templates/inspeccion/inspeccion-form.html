@@ -1,0 +1,70 @@
+{% extends 'base.html' %}
+
+{% block titulo%}Inspeccion{% endblock titulo %}
+                            {% block opciones %}
+                            <li >
+                                <a href="{% url 'usuario.login' %}">Inicio</a>
+                            </li >
+                            <li class="active">
+                                <a href="{% url 'agenda.agenda-list' %}">Agenda</a>
+                            </li>                                                    
+                            {% endblock opciones %}
+{% block navegacion %}
+    <li> <a href="{% url 'usuario.index' %}"><i class="fa fa-home"></i> Inicio <span class="divider">/</span></a></li>
+    <li><a href="{% url 'agenda.agenda-list' %}"> Agenda <span class="divider">/</span></a></li>
+    <li class="active"> </i> Reportar inspeccion </li>
+{% endblock navegacion %}
+{% block tituloContenido %}
+    {{ titulo }}
+
+{% endblock tituloContenido %}
+
+
+{% block contenido %}
+	
+	<div class="span10">
+		<form id="frmInspeccion" class="form-horizontal" action="" method="post">
+			{% csrf_token %}
+			{{ form.as_p }}
+			<div class="form-actions">
+				<button class="btn btn-primary" type="submit" >{{nombre_btn}}</button>
+			</div>	
+			
+		</form>
+		<a href="{% url 'agenda.agenda-list' %}"><i class="fa fa-arrow-circle-left fa-2x"></i> Volver al listado de la agenda</a>
+	</div>
+	<!-- {{ user.usuario.id_empresa.nombre}} -->
+
+{% endblock contenido %}
+
+{% block imports %}
+<script type="text/javascript">
+    jQuery(document).ready(function(){
+        if (navigator.geolocation) {
+          navigator.geolocation.getCurrentPosition(function(position) {
+            var pos = {
+              lat: position.coords.latitude,
+              lng: position.coords.longitude
+            };
+            $('#id_longitud').val(position.coords.longitude);
+            $('#id_latitud').val(position.coords.latitude);
+
+            //infoWindow.setPosition(pos);
+            //infoWindow.setContent('Location found.');
+            //map.setCenter(pos);
+          }, function() {
+            //handleLocationError(true, infoWindow, map.getCenter());
+          });
+        } else {
+          // Browser doesn't support Geolocation
+          //handleLocationError(false, infoWindow, map.getCenter());
+        }
+
+        //$('#id_longitud').val(10);
+        //$('#id_latitud').val(20);
+    });
+</script>
+    <script async defer
+        src="https://maps.googleapis.com/maps/api/js?key=AIzaSyCu6DgqZcE2iYR0MacArGFz2Mx8lSrVo5E&callback=initMap">
+    </script>
+{% endblock imports %}
