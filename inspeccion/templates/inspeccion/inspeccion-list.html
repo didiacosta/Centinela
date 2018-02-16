@@ -133,7 +133,7 @@
             markers.push(new google.maps.Marker({
               position:{lat: {{inspeccion.latitud}}, lng: {{inspeccion.longitud}}},
               map: map,
-              title: String({{inspeccion.programacion.ordenServicio}})
+              title: String('{{inspeccion.programacion.ordenServicio}}')
             }));
             //markers.push(marker);
             markers[markers.length-1].infowindow = new google.maps.InfoWindow({

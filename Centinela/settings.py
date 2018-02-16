@@ -75,9 +75,11 @@ DATABASES = {
         #'ENGINE': 'mysql.connector.django',
         'NAME': 'centineladb',                      
         'USER': 'root',                      
-        'PASSWORD': 'santi10',         
+        'PASSWORD': 'santi10',#desarrollo
+    #'PASSWORD': 'dacosta102014', # en la vm         
         'HOST': '127.0.0.1',                 
-        'PORT': '3607',                      
+        'PORT': '3607',# en desarrollo
+    #'PORT': '3306',                      
     },
 }
 
@@ -105,3 +107,6 @@ STATICFILES_DIRS = (
 
 MEDIA_ROOT = os.sep.join(os.path.abspath(__file__).split(os.sep)[:-2] + ['images'])
 MEDIA_URL = '/images/'
+
+LOGIN_URL = '/usuario/login/'
+LOGOUT_URL = '/usuario/logout/'
